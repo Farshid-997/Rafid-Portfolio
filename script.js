@@ -54,6 +54,24 @@
     });
   }
 
+  // Nav: highlight Home or Blog based on hash and scroll
+  function setActiveNav() {
+    var hash = window.location.hash;
+    var homeLink = document.querySelector('.nav-link[data-nav="home"]');
+    var blogLink = document.querySelector('.nav-link[data-nav="blog"]');
+    if (!homeLink || !blogLink) return;
+    if (hash === '#blog') {
+      blogLink.classList.add('active');
+      homeLink.classList.remove('active');
+    } else {
+      homeLink.classList.add('active');
+      blogLink.classList.remove('active');
+    }
+  }
+  setActiveNav();
+  window.addEventListener('hashchange', setActiveNav);
+  window.addEventListener('load', setActiveNav);
+
   // About section: animate when scrolled into view (once)
   var aboutSection = document.getElementById('about');
   if (aboutSection && 'IntersectionObserver' in window) {
@@ -127,13 +145,49 @@
     });
   }
 
-  var contactForm = document.querySelector('.contact-form');
+  var contactForm = document.getElementById('contact-form');
   if (contactForm) {
+    var submitBtn = document.getElementById('contact-submit');
+    var messageEl = document.getElementById('contact-form-message');
     contactForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      console.log('Contact form submitted');
-      alert('Message sent! (This is a demo — connect a backend or Formspree/Netlify Forms to handle submissions.)');
-      contactForm.reset();
+      var formData = new FormData(contactForm);
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+      }
+      if (messageEl) {
+        messageEl.textContent = '';
+        messageEl.className = 'contact-form-message';
+      }
+      fetch(contactForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: { Accept: 'application/json' }
+      })
+        .then(function (response) {
+          if (response.ok) {
+            if (messageEl) {
+              messageEl.textContent = 'Thanks! Your message has been sent.';
+              messageEl.className = 'contact-form-message contact-form-message--success';
+            }
+            contactForm.reset();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .catch(function () {
+          if (messageEl) {
+            messageEl.textContent = 'Sorry, there was an error. Please try again or email directly.';
+            messageEl.className = 'contact-form-message contact-form-message--error';
+          }
+        })
+        .finally(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'SEND';
+          }
+        });
     });
   }
 })();
