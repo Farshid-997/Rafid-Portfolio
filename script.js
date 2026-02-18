@@ -152,6 +152,7 @@
     contactForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var formData = new FormData(contactForm);
+      var ajaxUrl = contactForm.action.replace('formsubmit.co/', 'formsubmit.co/ajax/');
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending…';
@@ -160,25 +161,40 @@
         messageEl.textContent = '';
         messageEl.className = 'contact-form-message';
       }
-      fetch(contactForm.action, {
+      var submittedName = (contactForm.querySelector('[name="name"]') && contactForm.querySelector('[name="name"]').value) || '';
+      var submittedEmail = (contactForm.querySelector('[name="email"]') && contactForm.querySelector('[name="email"]').value) || '';
+
+      fetch(ajaxUrl, {
         method: 'POST',
         body: formData,
         headers: { Accept: 'application/json' }
       })
         .then(function (response) {
-          if (response.ok) {
-            if (messageEl) {
-              messageEl.textContent = 'Thanks! Your message has been sent.';
-              messageEl.className = 'contact-form-message contact-form-message--success';
+          return response.text().then(function (text) {
+            var data;
+            try { data = text ? JSON.parse(text) : {}; } catch (err) { data = {}; }
+            if (response.ok && data.success !== false) {
+              if (messageEl) {
+                messageEl.textContent = submittedName
+                  ? 'Thanks, ' + submittedName + '! Your message has been sent. We\'ll get back to you at ' + submittedEmail + '.'
+                  : 'Thanks! Your message has been sent.';
+                messageEl.className = 'contact-form-message contact-form-message--success';
+              }
+              contactForm.reset();
+            } else {
+              var errMsg = 'Sorry, there was an error. Please try again or email directly.';
+              if (response.status === 429) {
+                errMsg = 'Too many requests. Please wait a few minutes and try again, or email us directly.';
+              } else if (data.message) {
+                errMsg = data.message;
+              }
+              throw new Error(errMsg);
             }
-            contactForm.reset();
-          } else {
-            throw new Error('Something went wrong');
-          }
+          });
         })
-        .catch(function () {
+        .catch(function (err) {
           if (messageEl) {
-            messageEl.textContent = 'Sorry, there was an error. Please try again or email directly.';
+            messageEl.textContent = err && err.message ? err.message : 'Sorry, there was an error. Please try again or email directly.';
             messageEl.className = 'contact-form-message contact-form-message--error';
           }
         })

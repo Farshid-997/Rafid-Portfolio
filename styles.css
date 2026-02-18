@@ -1275,7 +1275,8 @@ html[data-theme="light"] .theme-toggle-moon {
   font: inherit;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--input-bg);
+  background: #ffffff;
+  color: #202124;
 }
 
 .contact-input:focus,
@@ -1739,6 +1740,13 @@ html[data-theme="light"] .theme-toggle-moon {
   border-color: var(--blue);
 }
 
+[data-theme="dark"] .contact-input,
+[data-theme="dark"] .contact-textarea {
+  background: #ffffff;
+  color: #202124;
+  border-color: #dadce0;
+}
+
 [data-theme="dark"] .contact-input:focus,
 [data-theme="dark"] .contact-textarea:focus {
   border-color: var(--blue);
@@ -1771,6 +1779,13 @@ html[data-theme="light"] .theme-toggle-moon {
 
   html:not([data-theme="light"]) .blog-input:focus {
     border-color: var(--blue);
+  }
+
+  html:not([data-theme="light"]) .contact-input,
+  html:not([data-theme="light"]) .contact-textarea {
+    background: #ffffff;
+    color: #202124;
+    border-color: #dadce0;
   }
 
   html:not([data-theme="light"]) .contact-input:focus,
