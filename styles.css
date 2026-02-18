@@ -633,7 +633,7 @@ html[data-theme="light"] .theme-toggle-moon {
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 768px) {
   .portfolio-gallery {
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
@@ -1635,7 +1635,7 @@ html[data-theme="light"] .theme-toggle-moon {
   }
 
   .portfolio-gallery {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .project-card--wide {
